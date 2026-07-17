@@ -34,19 +34,23 @@ export default function InstrumentCard({ instrumento, alAgregarAlCarrito }) {
 // Estilos
 const styles = {
     card: {
-        border: '1px solid #ddd',
-        borderRadius: '8px',
+        border: '1px solid #e2e8f0',
+        borderRadius: '12px',
         overflow: 'hidden',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#fff',
-        maxWidth: '300px'
+        width: '100%',
+        transition: 'transform 0.2s, box-shadow 0.2s',
     },
     imagen: {
         width: '100%',
-        height: '200px',
-        objectFit: 'cover'
+        height: '220px',
+        objectFit: 'contain',
+        backgroundColor: '#f8fafc',
+        padding: '12px', //
+        boxSizing: 'border-box'
     },
     contenido: {
         padding: '16px',

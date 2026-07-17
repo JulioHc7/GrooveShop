@@ -175,23 +175,29 @@ const styles = {
   },
   layout: {
     display: 'grid',
+    // 3fr para el catálogo y 1fr para el carrito (proporción limpia)
     gridTemplateColumns: '3fr 1fr',
-    gap: '30px'
-  },
-  seccionCatalogo: {
-    padding: '10px'
+    gap: '30px',
+    width: '100%',
+    maxWidth: '1700px',
+    margin: '0 auto',
+    padding: '0 20px',
+    boxSizing: 'border-box'
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '20px'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+    gap: '24px',
+    marginTop: '15px'
   },
   sidebar: {
     backgroundColor: '#fff',
     padding: '20px',
     borderRadius: '8px',
     boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-    height: 'fit-content'
+    height: 'fit-content',
+    position: 'sticky',
+    top: '20px'
   },
   listaCarrito: {
     listStyle: 'none',
