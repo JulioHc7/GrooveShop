@@ -12,3 +12,25 @@ export const obtenerInstrumentos = async () => {
         return [];
     }
 };
+
+export const crearPedido = async (pedidoData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/pedidos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pedidoData),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || "Error al procesar el pedido");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error al enviar el pedido:", error);
+        throw error;
+    }
+};

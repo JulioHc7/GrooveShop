@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { obtenerInstrumentos } from './services/api';
 import InstrumentCard from './components/InstrumentCard';
+import { obtenerInstrumentos, crearPedido } from './services/api';
 
 export default function App() {
-  // 1. Definimos los estados
+
   const [instrumentos, setInstrumentos] = useState([]); // Guarda la lista de la BD
   const [carrito, setCarrito] = useState([]); // Guarda los productos agregados
   const [cargando, setCargando] = useState(true);
 
-  // 2. useEffect ejecuta la carga de datos al renderizar el componente por primera vez
   useEffect(() => {
     const cargarDatos = async () => {
       const datos = await obtenerInstrumentos();
@@ -18,13 +17,9 @@ export default function App() {
     cargarDatos();
   }, []);
 
-  // 3. Función para añadir instrumentos al carrito local (lógica frontend)
   const agregarAlCarrito = (instrumento) => {
-    // Verificamos si el producto ya está en el carrito
     const existe = carrito.find(item => item.instrumento.id === instrumento.id);
-
     if (existe) {
-      // Si ya existe, validamos que no supere el stock disponible
       if (existe.cantidad < instrumento.stock) {
         setCarrito(carrito.map(item =>
             item.instrumento.id === instrumento.id
@@ -35,8 +30,44 @@ export default function App() {
         alert("¡No hay más stock disponible de este instrumento!");
       }
     } else {
-      // Si es nuevo en el carrito, lo agregamos con cantidad 1
       setCarrito([...carrito, { instrumento, cantidad: 1 }]);
+    }
+  };
+
+  const procesarCheckout = async () => {
+
+    const nombre = prompt("Ingresa tu nombre para la factura:");
+    const correo = prompt("Ingresa tu correo electrónico:");
+
+    if (!nombre || !correo) {
+      alert("Debes completar tus datos para proceder con la compra.");
+      return;
+    }
+
+    const datosPedido = {
+      nombreCliente: nombre,
+      correoCliente: correo,
+      detalles: carrito.map(item => ({
+        instrumento: { id: item.instrumento.id },
+        cantidad: item.cantidad
+      }))
+    };
+
+    try {
+
+      const pedidoCreado = await crearPedido(datosPedido);
+
+      alert(`¡Compra completada exitosamente!\nPedido N°: ${pedidoCreado.id}\nTotal: $${pedidoCreado.total.toFixed(2)}`);
+
+
+      setCarrito([]);
+
+
+      const datosActualizados = await obtenerInstrumentos();
+      setInstrumentos(datosActualizados);
+
+    } catch (error) {
+      alert(`Hubo un error al procesar tu compra: ${error.message}`);
     }
   };
 
@@ -48,10 +79,9 @@ export default function App() {
         </header>
 
         {cargando ? (
-            <h2 style={{ textAlign: 'center' }}>Cargando catálogo... 🥁</h2>
+            <h2 style={{ textAlign: 'center' }}>Cargando catálogo...</h2>
         ) : (
             <main style={styles.layout}>
-              {/* SECCIÓN DEL CATÁLOGO */}
               <section style={styles.seccionCatalogo}>
                 <h2>Catálogo de Instrumentos</h2>
                 <div style={styles.grid}>
@@ -65,9 +95,8 @@ export default function App() {
                 </div>
               </section>
 
-              {/* SECCIÓN DEL CARRITO (Vista Previa Rápida) */}
               <aside style={styles.sidebar}>
-                <h2>Tu Carrito 🛒</h2>
+                <h2>Tu Carrito </h2>
                 {carrito.length === 0 ? (
                     <p>El carrito está vacío.</p>
                 ) : (
@@ -87,7 +116,7 @@ export default function App() {
                           ${carrito.reduce((sum, item) => sum + (item.instrumento.price || item.instrumento.precio) * item.cantidad, 0).toFixed(2)}
                         </h3>
                       </div>
-                      <button style={styles.botonCheckout}>Proceder al Pago 💳</button>
+                      <button onClick={procesarCheckout} style={styles.botonCheckout}>Proceder al Pago </button>
                     </div>
                 )}
               </aside>
