@@ -42,6 +42,11 @@ export default function App() {
     }
   };
 
+  const eliminarDelCarrito = (instrumentoId) => {
+    const carritoActualizado = carrito.filter(item => item.instrumento.id !== instrumentoId);
+    setCarrito(carritoActualizado);
+  };
+
   const procesarCheckout = async () => {
 
     const nombre = prompt("Ingresa tu nombre para la factura:");
@@ -83,7 +88,7 @@ export default function App() {
       <div style={styles.contenedor}>
         <header style={styles.header}>
           <h1>GrooveShop</h1>
-          <p>Tu tienda de instrumentos favorita en 2026</p>
+          <p>Tu tienda con mas groove de el salvador</p>
         </header>
 
         {cargando ? (
@@ -134,8 +139,17 @@ export default function App() {
                       <ul style={styles.listaCarrito}>
                         {carrito.map(item => (
                             <li key={item.instrumento.id} style={styles.itemCarrito}>
-                              <span>{item.instrumento.nombre} (x{item.cantidad})</span>
-                              <strong>${(item.instrumento.precio * item.cantidad).toFixed(2)}</strong>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <span>{item.instrumento.nombre} (x{item.cantidad})</span>
+                                <strong>${(item.instrumento.precio * item.cantidad).toFixed(2)}</strong>
+                              </div>
+                              <button
+                                  onClick={() => eliminarDelCarrito(item.instrumento.id)}
+                                  style={styles.botonEliminar}
+                                  title="Eliminar del carrito"
+                              >
+                                ❌
+                              </button>
                             </li>
                         ))}
                       </ul>
@@ -201,6 +215,20 @@ const styles = {
     listStyle: 'none',
     padding: '0',
     margin: '0'
+  },
+  botonEliminar: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+    padding: '5px 8px',
+    borderRadius: '4px',
+    transition: 'background-color 0.2s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: '10px',
+    alignSelf: 'center'
   },
   itemCarrito: {
     display: 'flex',

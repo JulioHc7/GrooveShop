@@ -68,6 +68,12 @@ public class DataInitializer {
                         new java.math.BigDecimal("200.00"), 6,
                         "https://m.media-amazon.com/images/I/6174okFc7tL._AC_SL1200_.jpg", "Cuerdas"
                 ));
+                repository.save(new Instrumento(
+                        null, "Congas ", "LP",
+                        "Proyección de sonido brillante con acabados de alta gama.",
+                        new java.math.BigDecimal("1200.00"), 10,
+                        "https://electronica2001es.com/images/percusion/044256DW.jpg", "Percusión"
+                ));
 
             }
         };
