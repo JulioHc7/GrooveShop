@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "instrumentos")
-@Data // Genera automáticamente getters, setters, toString, equals y hashCode con Lombok
-@NoArgsConstructor // Genera el constructor vacío que requiere JPA
-@AllArgsConstructor // Genera un constructor con todos los campos
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Instrumento {
 
     @Id
