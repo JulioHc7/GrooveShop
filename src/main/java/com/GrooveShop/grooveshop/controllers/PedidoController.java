@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
+@org.springframework.web.bind.annotation.CrossOrigin(origins = "http://localhost:5173")
 public class PedidoController {
 
     @Autowired

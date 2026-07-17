@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/instrumentos")
+@org.springframework.web.bind.annotation.CrossOrigin(origins = "http://localhost:5173")
 public class InstrumentoController {
 
     @Autowired
