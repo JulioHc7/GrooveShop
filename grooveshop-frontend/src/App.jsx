@@ -10,20 +10,14 @@ export default function App() {
   const [categoriaActiva, setCategoriaActiva] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
-
-
-
-// Cada vez que cambie la categoría o la búsqueda, se recargan los datos desde el Backend
   useEffect(() => {
     const filtrarDatos = async () => {
       try {
-        // Traemos los datos pasando los filtros actuales
         const datos = await obtenerInstrumentos(categoriaActiva, busqueda);
         setInstrumentos(datos);
       } catch (error) {
         console.error("Error al cargar instrumentos:", error);
       } finally {
-        // 🎯 ¡LÍNEA CRÍTICAL! Si no pones esto, la pantalla se queda en "Cargando..." para siempre
         setCargando(false);
       }
     };
@@ -97,7 +91,9 @@ export default function App() {
         ) : (
             <main style={styles.layout}>
               <section style={styles.seccionCatalogo}>
-                <h2>Catálogo de Instrumentos</h2>
+                <h2 style={{ ...styles.tituloCatalogo, color: '#2c3e50' }}>
+                  Catálogo de Instrumentos
+                </h2>
 
                 <div style={styles.barraFiltros}>
                   <input
@@ -128,7 +124,9 @@ export default function App() {
               </section>
 
               <aside style={styles.sidebar}>
-                <h2>Tu Carrito </h2>
+                <h2 style={{ ...styles.tituloCatalogo, color: '#2c3e50' }}>
+                  Tu carrito
+                </h2>
                 {carrito.length === 0 ? (
                     <p>El carrito está vacío.</p>
                 ) : (
@@ -175,13 +173,12 @@ const styles = {
   },
   layout: {
     display: 'grid',
-    // 3fr para el catálogo y 1fr para el carrito (proporción limpia)
     gridTemplateColumns: '3fr 1fr',
     gap: '30px',
     width: '100%',
     maxWidth: '1700px',
     margin: '0 auto',
-    padding: '0 20px',
+    padding: '20px 20px',
     boxSizing: 'border-box'
   },
   grid: {
@@ -192,12 +189,13 @@ const styles = {
   },
   sidebar: {
     backgroundColor: '#fff',
-    padding: '20px',
+    padding: '26px',
     borderRadius: '8px',
     boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
     height: 'fit-content',
     position: 'sticky',
-    top: '20px'
+    top: '20px',
+    marginTop: '38px'
   },
   listaCarrito: {
     listStyle: 'none',
@@ -233,7 +231,7 @@ const styles = {
     marginBottom: '24px',
     padding: '15px',
     backgroundColor: '#fff',
-    borderRadius: '8px',
+    borderRadius: '12px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
   },
   inputBuscar: {
@@ -243,7 +241,9 @@ const styles = {
     border: '1px solid #ccc',
     outline: 'none',
     width: '100%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    backgroundColor: '#f8fafc',
+    color: '#000000'
   },
   botonesCategoria: {
     display: 'flex',
@@ -262,9 +262,9 @@ const styles = {
   },
   btnInactivo: {
     padding: '8px 16px',
-    backgroundColor: '#eaeded',
-    color: '#333',
-    border: 'none',
+    backgroundColor: '#f1f2f6',
+    color: '#2c3e50',
+    border: '1px solid #dcdde1',
     borderRadius: '20px',
     cursor: 'pointer',
     transition: 'background-color 0.2s'

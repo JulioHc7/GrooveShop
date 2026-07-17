@@ -22,7 +22,7 @@ public class DataInitializer {
                         "La guitarra eléctrica más icónica de la historia.",
                         new BigDecimal("1200.00"),
                         10,
-                        "https://www.pngfind.com/pngs/m/654-6545368_guitarra-st-fender-stratocaster-hd-png-download.png",
+                        "https://audiomusicacl.vtexassets.com/arquivos/ids/191413-800-800?v=638525238674170000&width=800&height=800&aspect=true",
                         "Cuerdas"
                 ));
 

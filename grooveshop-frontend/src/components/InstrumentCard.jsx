@@ -24,7 +24,7 @@ export default function InstrumentCard({ instrumento, alAgregarAlCarrito }) {
                     style={styles.boton}
                     disabled={instrumento.stock === 0}
                 >
-                    {instrumento.stock > 0 ? "Añadir al Carrito 🛒" : "Agotado 🚫"}
+                    {instrumento.stock > 0 ? "Añadir al Carrito 🛒" : "Agotado "}
                 </button>
             </div>
         </div>
@@ -48,12 +48,12 @@ const styles = {
         width: '100%',
         height: '220px',
         objectFit: 'contain',
-        backgroundColor: '#f8fafc',
+        backgroundColor: '#ffffff',
         padding: '12px', //
         boxSizing: 'border-box'
     },
     contenido: {
-        padding: '16px',
+        padding: '20px',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px'
@@ -78,7 +78,7 @@ const styles = {
         fontSize: '13px',
         color: '#777',
         margin: '0',
-        height: '40px',
+        height: '80px',
         overflow: 'hidden',
         textOverflow: 'ellipsis'
     },
