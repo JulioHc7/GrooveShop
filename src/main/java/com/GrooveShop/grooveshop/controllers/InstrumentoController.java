@@ -20,4 +20,8 @@ public class InstrumentoController {
     public List<Instrumento> obtenerTodos() {
         return instrumentoRepository.findAll();
     }
+    @org.springframework.web.bind.annotation.PostMapping
+    public Instrumento crear(@org.springframework.web.bind.annotation.RequestBody Instrumento nuevoInstrumento) {
+        return instrumentoRepository.save(nuevoInstrumento);
+    }
 }
