@@ -1,122 +1,163 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { obtenerInstrumentos } from './services/api';
+import InstrumentCard from './components/InstrumentCard';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  // 1. Definimos los estados
+  const [instrumentos, setInstrumentos] = useState([]); // Guarda la lista de la BD
+  const [carrito, setCarrito] = useState([]); // Guarda los productos agregados
+  const [cargando, setCargando] = useState(true);
+
+  // 2. useEffect ejecuta la carga de datos al renderizar el componente por primera vez
+  useEffect(() => {
+    const cargarDatos = async () => {
+      const datos = await obtenerInstrumentos();
+      setInstrumentos(datos);
+      setCargando(false);
+    };
+    cargarDatos();
+  }, []);
+
+  // 3. Función para añadir instrumentos al carrito local (lógica frontend)
+  const agregarAlCarrito = (instrumento) => {
+    // Verificamos si el producto ya está en el carrito
+    const existe = carrito.find(item => item.instrumento.id === instrumento.id);
+
+    if (existe) {
+      // Si ya existe, validamos que no supere el stock disponible
+      if (existe.cantidad < instrumento.stock) {
+        setCarrito(carrito.map(item =>
+            item.instrumento.id === instrumento.id
+                ? { ...item, cantidad: item.cantidad + 1 }
+                : item
+        ));
+      } else {
+        alert("¡No hay más stock disponible de este instrumento!");
+      }
+    } else {
+      // Si es nuevo en el carrito, lo agregamos con cantidad 1
+      setCarrito([...carrito, { instrumento, cantidad: 1 }]);
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <div style={styles.contenedor}>
+        <header style={styles.header}>
+          <h1>GrooveShop</h1>
+          <p>Tu tienda de instrumentos favorita en 2026</p>
+        </header>
 
-      <div className="ticks"></div>
+        {cargando ? (
+            <h2 style={{ textAlign: 'center' }}>Cargando catálogo... 🥁</h2>
+        ) : (
+            <main style={styles.layout}>
+              {/* SECCIÓN DEL CATÁLOGO */}
+              <section style={styles.seccionCatalogo}>
+                <h2>Catálogo de Instrumentos</h2>
+                <div style={styles.grid}>
+                  {instrumentos.map(inst => (
+                      <InstrumentCard
+                          key={inst.id}
+                          instrumento={inst}
+                          alAgregarAlCarrito={agregarAlCarrito}
+                      />
+                  ))}
+                </div>
+              </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+              {/* SECCIÓN DEL CARRITO (Vista Previa Rápida) */}
+              <aside style={styles.sidebar}>
+                <h2>Tu Carrito 🛒</h2>
+                {carrito.length === 0 ? (
+                    <p>El carrito está vacío.</p>
+                ) : (
+                    <div>
+                      <ul style={styles.listaCarrito}>
+                        {carrito.map(item => (
+                            <li key={item.instrumento.id} style={styles.itemCarrito}>
+                              <span>{item.instrumento.nombre} (x{item.cantidad})</span>
+                              <strong>${(item.instrumento.precio * item.cantidad).toFixed(2)}</strong>
+                            </li>
+                        ))}
+                      </ul>
+                      <hr />
+                      <div style={styles.totalContainer}>
+                        <h3>Total:</h3>
+                        <h3>
+                          ${carrito.reduce((sum, item) => sum + (item.instrumento.price || item.instrumento.precio) * item.cantidad, 0).toFixed(2)}
+                        </h3>
+                      </div>
+                      <button style={styles.botonCheckout}>Proceder al Pago 💳</button>
+                    </div>
+                )}
+              </aside>
+            </main>
+        )}
+      </div>
+  );
 }
 
-export default App
+const styles = {
+  contenedor: {
+    fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    minHeight: '100vh'
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: '40px',
+    backgroundColor: '#2c3e50',
+    color: '#fff',
+    padding: '20px',
+    borderRadius: '8px'
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: '3fr 1fr',
+    gap: '30px'
+  },
+  seccionCatalogo: {
+    padding: '10px'
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: '20px'
+  },
+  sidebar: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+    height: 'fit-content'
+  },
+  listaCarrito: {
+    listStyle: 'none',
+    padding: '0',
+    margin: '0'
+  },
+  itemCarrito: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '10px 0',
+    borderBottom: '1px solid #eee',
+    fontSize: '14px'
+  },
+  totalContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '15px 0'
+  },
+  botonCheckout: {
+    width: '100%',
+    backgroundColor: '#2ecc71',
+    color: '#fff',
+    border: 'none',
+    padding: '12px',
+    borderRadius: '4px',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }
+};
+
