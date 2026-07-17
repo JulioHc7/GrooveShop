@@ -4,18 +4,32 @@ import { obtenerInstrumentos, crearPedido } from './services/api';
 
 export default function App() {
 
-  const [instrumentos, setInstrumentos] = useState([]); // Guarda la lista de la BD
-  const [carrito, setCarrito] = useState([]); // Guarda los productos agregados
+  const [instrumentos, setInstrumentos] = useState([]);
+  const [carrito, setCarrito] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [categoriaActiva, setCategoriaActiva] = useState("");
+  const [busqueda, setBusqueda] = useState("");
 
+
+
+
+// Cada vez que cambie la categoría o la búsqueda, se recargan los datos desde el Backend
   useEffect(() => {
-    const cargarDatos = async () => {
-      const datos = await obtenerInstrumentos();
-      setInstrumentos(datos);
-      setCargando(false);
+    const filtrarDatos = async () => {
+      try {
+        // Traemos los datos pasando los filtros actuales
+        const datos = await obtenerInstrumentos(categoriaActiva, busqueda);
+        setInstrumentos(datos);
+      } catch (error) {
+        console.error("Error al cargar instrumentos:", error);
+      } finally {
+        // 🎯 ¡LÍNEA CRÍTICAL! Si no pones esto, la pantalla se queda en "Cargando..." para siempre
+        setCargando(false);
+      }
     };
-    cargarDatos();
-  }, []);
+
+    filtrarDatos();
+  }, [categoriaActiva, busqueda]);
 
   const agregarAlCarrito = (instrumento) => {
     const existe = carrito.find(item => item.instrumento.id === instrumento.id);
@@ -84,6 +98,24 @@ export default function App() {
             <main style={styles.layout}>
               <section style={styles.seccionCatalogo}>
                 <h2>Catálogo de Instrumentos</h2>
+
+                <div style={styles.barraFiltros}>
+                  <input
+                      type="text"
+                      placeholder="Buscar instrumento por nombre..."
+                      value={busqueda}
+                      onChange={(e) => setBusqueda(e.target.value)}
+                      style={styles.inputBuscar}
+                  />
+                  <div style={styles.botonesCategoria}>
+                    <button onClick={() => setCategoriaActiva("")} style={categoriaActiva === "" ? styles.btnActivo : styles.btnInactivo}>Todos</button>
+                    <button onClick={() => setCategoriaActiva("Cuerdas")} style={categoriaActiva === "Cuerdas" ? styles.btnActivo : styles.btnInactivo}>Cuerdas</button>
+                    <button onClick={() => setCategoriaActiva("Percusión")} style={categoriaActiva === "Percusión" ? styles.btnActivo : styles.btnInactivo}>Percusión</button>
+                    <button onClick={() => setCategoriaActiva("Teclados")} style={categoriaActiva === "Teclados" ? styles.btnActivo : styles.btnInactivo}>Teclados</button>
+                    <button onClick={() => setCategoriaActiva("Vientos")} style={categoriaActiva === "Vientos" ? styles.btnActivo : styles.btnInactivo}>Vientos</button>
+                  </div>
+                </div>
+
                 <div style={styles.grid}>
                   {instrumentos.map(inst => (
                       <InstrumentCard
@@ -187,6 +219,50 @@ const styles = {
     borderRadius: '4px',
     fontWeight: 'bold',
     cursor: 'pointer'
-  }
+  },
+  barraFiltros: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginBottom: '24px',
+    padding: '15px',
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+  },
+  inputBuscar: {
+    padding: '10px 15px',
+    fontSize: '16px',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+    outline: 'none',
+    width: '100%',
+    boxSizing: 'border-box'
+  },
+  botonesCategoria: {
+    display: 'flex',
+    gap: '8px',
+    flexWrap: 'wrap'
+  },
+  btnActivo: {
+    padding: '8px 16px',
+    backgroundColor: '#2c3e50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '20px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: 'background-color 0.2s'
+  },
+  btnInactivo: {
+    padding: '8px 16px',
+    backgroundColor: '#eaeded',
+    color: '#333',
+    border: 'none',
+    borderRadius: '20px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s'
+  },
+
 };
 
